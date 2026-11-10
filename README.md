@@ -7,6 +7,10 @@
 原版仅支持 MIUI（`com.android.deskclock`），这里适配到 **ColorOS / realme UI**
 （`com.coloros.alarmclock`），并重构了执行链路以便在 KernelSU 环境下工作。
 
+> **直接下载 APK**：[Releases · v1.0](https://github.com/oishijie/AlarmShell/releases/tag/v1.0)
+>
+> SHA-256：`5d3bc96a24a38c97cdbf66457911a72f8ddb176b855fdd1d883652f9b8fe0bcf`
+
 ---
 
 ## 一、原理
