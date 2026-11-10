@@ -44,8 +44,14 @@
     │   └── ShellExecThread.java  写触发文件（不依赖 su）
     ├── daemon/
     │   ├── alarmshell-watch.sh   root 守护，轮询触发目录并执行脚本
-    │   ├── ensure-daemon.sh      守护自愈 + 开机自启入口
-    │   └── eat.sh                示例：打开美团拼好饭
+    │   └── ensure-daemon.sh      守护自愈 + 开机自启入口
+    ├── examples/                 示例脚本（含各自说明，从 hello.sh 开始试）
+    │   ├── hello.sh              验证链路是否通
+    │   ├── open-app.sh           打开任意 App
+    │   ├── open-deeplink.sh      打开 App 内具体页面
+    │   ├── wait-unlock.sh        锁屏等待解锁后动作（最推荐）
+    │   ├── eat.sh                打开美团拼好饭
+    │   └── backup.sh             定时备份/清理
     └── build-offline.sh          容器内离线构建（无需 Android Studio）
 ```
 
@@ -136,7 +142,16 @@ chmod 777 /data/user/0/com.coloros.alarmclock/files/trigger
 ### 4. 放脚本
 
 把脚本放进 `/data/user/0/com.coloros.alarmclock/files/shell/`，
-文件名就是之后要填的闹钟名称。
+文件名就是之后要填的闹钟名称。直接从仓库拷示例：
+
+```sh
+su -c "mkdir -p /data/user/0/com.coloros.alarmclock/files/shell"
+su -c "cp /sdcard/AlarmShell/examples/hello.sh /data/user/0/com.coloros.alarmclock/files/shell/"
+su -c "chmod 755 /data/user/0/com.coloros.alarmclock/files/shell/*.sh"
+```
+
+**建议先跑 `hello.sh` 验证链路**，通了再换真正想要的脚本。
+可用的示例见 [AlarmShell/examples/](AlarmShell/examples/README.md)。
 
 ---
 
@@ -153,14 +168,30 @@ chmod 777 /data/user/0/com.coloros.alarmclock/files/trigger
 
 ---
 
-## 七、自带的 eat.sh（打开美团拼好饭）
+## 七、示例脚本
 
-`daemon/eat.sh` 是给「定时提醒吃饭」场景写的示例：
+**装好 APK 只是第一步，真正要执行的脚本需要你自己放。**
 
-- **亮屏时**：关闹钟 → 通知「8 秒后打开美团拼好饭」→ 8 秒后打开
-- **锁屏时**：关闹钟 → 通知「解锁后会自动打开美团拼好饭」→ **不尝试解锁、不接触密码**
-  → 每 2 秒检查一次解锁状态 → 解锁后 2 秒打开
-  → 5 分钟未解锁则放弃并提醒手动打开
+完整示例（含使用说明与常见坑）见 **[AlarmShell/examples/](AlarmShell/examples/README.md)**：
+
+| 脚本 | 用途 |
+|---|---|
+| `hello.sh` | 写一行日志，验证链路是否通——**建议先用这个** |
+| `open-app.sh` | 打开任意 App |
+| `open-deeplink.sh` | 打开 App 内某个具体页面 |
+| `wait-unlock.sh` | 锁屏时等你解锁进桌面后再动作（最推荐） |
+| `eat.sh` | 实战：响铃 → 进桌面 → 打开美团拼好饭 |
+| `backup.sh` | 定时备份/清理，不需动屏幕 |
+
+脚本放到 `/data/user/0/com.coloros.alarmclock/files/shell/`，闹钟名称填文件名即可。
+
+### eat.sh 的行为
+
+- **亮屏时**：通知「3 秒后打开美团拼好饭」→ 3 秒后打开
+- **锁屏时**：通知「解锁回到桌面后 3 秒自动打开」→ **不尝试解锁、不接触密码**
+  → 轮询到真正进入桌面 → 等 3 秒 → 打开
+  → 5 分钟未进桌面则放弃并提醒手动打开
+- **全程不滑动**：闹钟照常响，由你自己关
 
 拼好饭 URI（从美团 APK 内提取，非猜测）：
 
@@ -168,7 +199,7 @@ chmod 777 /data/user/0/com.coloros.alarmclock/files/trigger
 imeituan://www.meituan.com/mmp?shareEnv=release&appId=a8720b841a3d4b1d&targetPath=%2Fpages%2Findex%2Findex%3FshareType%3Dpinhaofan%26channel_id%3D14
 ```
 
-可调参数（脚本顶部）：`WAIT_SECONDS=8`（亮屏等待秒数）、锁屏等待上限 300 秒。
+可调参数（脚本顶部）：`WAIT_SECONDS=3`、锁屏等待上限 300 秒。
 
 ---
 
