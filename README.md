@@ -29,7 +29,25 @@
 
 ---
 
-## 二、环境要求
+## 二、目录结构
+
+```
+.
+├── README.md                     本文档
+└── AlarmShell/                   Android 工程（Android Studio 可直接打开）
+    ├── app/src/main/java/top/weixiansen574/alarmshell/xposed/
+    │   ├── XposedMain.java       hook AlarmService 响铃入口 + 60 秒去重
+    │   └── ShellExecThread.java  写触发文件（不依赖 su）
+    ├── daemon/
+    │   ├── alarmshell-watch.sh   root 守护，轮询触发目录并执行脚本
+    │   ├── ensure-daemon.sh      守护自愈 + 开机自启入口
+    │   └── eat.sh                示例：打开美团拼好饭
+    └── build-offline.sh          容器内离线构建（无需 Android Studio）
+```
+
+---
+
+## 三、环境要求
 
 | 项 | 要求 |
 |---|---|
@@ -40,7 +58,7 @@
 
 ---
 
-## 三、编译
+## 四、编译
 
 ### 方式 A：Android Studio（推荐，通用）
 
@@ -61,7 +79,7 @@ sh AlarmShell/build-offline.sh
 
 ---
 
-## 四、部署（手机侧）
+## 五、部署（手机侧）
 
 ### 1. 安装模块并启用
 
@@ -118,7 +136,7 @@ chmod 777 /data/user/0/com.coloros.alarmclock/files/trigger
 
 ---
 
-## 五、使用
+## 六、使用
 
 时钟 → 闹钟 → 点 **+** 新建闹钟，在 **「闹钟名称」** 输入框里填脚本文件名
 （一字不差，含 `.sh` 后缀），保存即可。
@@ -131,7 +149,7 @@ chmod 777 /data/user/0/com.coloros.alarmclock/files/trigger
 
 ---
 
-## 六、自带的 eat.sh（打开美团拼好饭）
+## 七、自带的 eat.sh（打开美团拼好饭）
 
 `daemon/eat.sh` 是给「定时提醒吃饭」场景写的示例：
 
@@ -150,7 +168,7 @@ imeituan://www.meituan.com/mmp?shareEnv=release&appId=a8720b841a3d4b1d&targetPat
 
 ---
 
-## 七、排错
+## 八、排错
 
 | 现象 | 排查 |
 |---|---|
@@ -169,7 +187,7 @@ su -c "tail -f /data/user/0/com.coloros.alarmclock/files/trigger/daemon.log"
 
 ---
 
-## 八、与 MIUI 原版的差异
+## 九、与 MIUI 原版的差异
 
 | 项 | 原版（MIUI） | 本版（ColorOS） |
 |---|---|---|
